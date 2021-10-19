@@ -2,20 +2,21 @@
 Module to manage the point clouds (loading, navigation, floor alignment).
 Sets the point cloud and original point cloud path. Initiate the writing to the virtual object buffer.
 """
+import dataclasses
+import json
 import ntpath
 import os
+from dataclasses import dataclass
 from shutil import copyfile
-from typing import List, Tuple, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import numpy as np
 import open3d as o3d
-
 from model.bbox import BBox
 from model.point_cloud import PointCloud
+
 from .config_manager import config
 from .label_manager import LabelManager
-
-from dataclasses import dataclass
 
 if TYPE_CHECKING:
     from view.gui import GUI
@@ -96,6 +97,8 @@ class PointCloudManger:
     def get_next_pcd(self):
         print("Loading next point cloud...")
         if self.pcds_left():
+            if config.getboolean("USER_INTERFACE", "keep_perspective"):
+                self.save_current_perspective()
             self.current_id += 1
             self.pointcloud = self.load_pointcloud(self.get_current_path())
             self.update_pcd_infos()
@@ -105,6 +108,8 @@ class PointCloudManger:
     def get_prev_pcd(self):
         print("Loading previous point cloud...")
         if self.current_id > 0:
+            if config.getboolean("USER_INTERFACE", "keep_perspective"):
+                self.save_current_perspective()
             self.current_id -= 1
             self.pointcloud = self.load_pointcloud(self.get_current_path())
             self.update_pcd_infos()
@@ -147,12 +152,23 @@ class PointCloudManger:
             print("No point clouds to save labels for!")
 
     def save_current_perspective(self, active: bool = True) -> None:
-        if active:
+        if active and self.pointcloud:
             self.saved_perspective = Perspective(
                 zoom=self.pointcloud.trans_z,
                 rotation=tuple(self.pointcloud.get_rotations()),
             )
             print(f"Saved current perspective ({self.saved_perspective}).")
+
+            # Write perspective to json
+            perspectives_folder_path = os.path.join(self.pcd_folder, "perspectives")
+            os.makedirs(perspectives_folder_path, exist_ok=True)
+            perspectives_file_path = os.path.join(
+                perspectives_folder_path,
+                f"{os.path.splitext(self.get_current_name())[0]}_perspective.json",
+            )
+            with open(perspectives_file_path, "w") as outfile:
+                json.dump(dataclasses.asdict(self.saved_perspective), outfile)
+
         else:
             self.saved_perspective = None
             print("Reset saved perspective.")
@@ -160,9 +176,6 @@ class PointCloudManger:
     # MANIPULATOR
     def load_pointcloud(self, path_to_pointcloud: str) -> PointCloud:
         print("=" * 20, "Loading", ntpath.basename(path_to_pointcloud), "=" * 20)
-
-        if config.getboolean("USER_INTERFACE", "keep_perspective"):
-            self.save_current_perspective()
 
         if (
             os.path.splitext(path_to_pointcloud)[1] == ".bin"
