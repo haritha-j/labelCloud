@@ -22,10 +22,38 @@ if TYPE_CHECKING:
     from view.gui import GUI
 
 
+PERSPECTIVES_FOLDER = "perspectives"
+
+
 @dataclass
 class Perspective:
     zoom: float
     rotation: Tuple[float, float, float]
+
+    def write_json(self, pcd_path: str) -> None:
+        pcd_folder, pcd_name = os.path.split(pcd_path)
+        perspectives_folder_path = os.path.join(pcd_folder, PERSPECTIVES_FOLDER)
+        os.makedirs(perspectives_folder_path, exist_ok=True)
+        perspectives_file_path = os.path.join(
+            perspectives_folder_path,
+            f"{os.path.splitext(pcd_name)[0]}_perspective.json",
+        )
+        with open(perspectives_file_path, "w") as outfile:
+            json.dump(dataclasses.asdict(self), outfile)
+
+    @classmethod
+    def read_json(cls, pcd_path: str) -> Optional["Perspective"]:
+        pcd_folder, pcd_name = os.path.split(pcd_path)
+        perspectives_folder_path = os.path.join(pcd_folder, PERSPECTIVES_FOLDER)
+        perspectives_file_path = os.path.join(
+            perspectives_folder_path,
+            f"{os.path.splitext(pcd_name)[0]}_perspective.json",
+        )
+        if os.path.exists(perspectives_file_path):
+            with open(perspectives_file_path, "r") as infile:
+                return Perspective(**json.load(infile))
+        else:
+            return None
 
 
 def color_pointcloud(points, z_min, z_max):
@@ -157,17 +185,8 @@ class PointCloudManger:
                 zoom=self.pointcloud.trans_z,
                 rotation=tuple(self.pointcloud.get_rotations()),
             )
+            self.saved_perspective.write_json(self.get_current_path())
             print(f"Saved current perspective ({self.saved_perspective}).")
-
-            # Write perspective to json
-            perspectives_folder_path = os.path.join(self.pcd_folder, "perspectives")
-            os.makedirs(perspectives_folder_path, exist_ok=True)
-            perspectives_file_path = os.path.join(
-                perspectives_folder_path,
-                f"{os.path.splitext(self.get_current_name())[0]}_perspective.json",
-            )
-            with open(perspectives_file_path, "w") as outfile:
-                json.dump(dataclasses.asdict(self.saved_perspective), outfile)
 
         else:
             self.saved_perspective = None
@@ -215,6 +234,8 @@ class PointCloudManger:
         diagonal = np.linalg.norm(max_dims)
 
         tmp_pcd.init_translation = -self.current_o3d_pcd.get_center() - [0, 0, diagonal]
+
+        self.saved_perspective = Perspective.read_json(path_to_pointcloud)
 
         if self.saved_perspective != None:
             tmp_pcd.init_translation = tuple(
