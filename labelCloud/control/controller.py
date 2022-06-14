@@ -63,6 +63,7 @@ class Controller:
             self.pcd_manager.get_next_pcd()
             self.reset()
             self.bbox_controller.set_bboxes(self.pcd_manager.get_labels_from_file())
+            self.bbox_controller.set_rels(self.pcd_manager.get_rels_from_file())
         else:
             self.view.update_progress(len(self.pcd_manager.pcds))
             self.view.button_next_pcd.setEnabled(False)
@@ -73,17 +74,21 @@ class Controller:
             self.pcd_manager.get_prev_pcd()
             self.reset()
             self.bbox_controller.set_bboxes(self.pcd_manager.get_labels_from_file())
+            self.bbox_controller.set_rels(self.pcd_manager.get_rels_from_file())
+
 
     def custom_pcd(self, custom: int) -> None:
         self.save()
         self.pcd_manager.get_custom_pcd(custom)
         self.reset()
         self.bbox_controller.set_bboxes(self.pcd_manager.get_labels_from_file())
+        self.bbox_controller.set_rels(self.pcd_manager.get_rels_from_file())
+
 
     # CONTROL METHODS
     def save(self) -> None:
         """Saves all bounding boxes in the label file."""
-        self.pcd_manager.save_labels_into_file(self.bbox_controller.bboxes)
+        self.pcd_manager.save_labels_into_file(self.bbox_controller.bboxes, self.bbox_controller.rels)
 
     def reset(self) -> None:
         """Resets the controllers and bounding boxes from the current screen."""
@@ -283,6 +288,9 @@ class Controller:
         elif (a0.key() == QtCore.Qt.Key_E) or (a0.key() == QtCore.Qt.Key_PageDown):
             # move down
             self.bbox_controller.translate_along_z(down=True)
+        elif (a0.key() == QtCore.Qt.Key_Z):
+            # add relationship
+            self.bbox_controller.add_rel('connection')
 
     def key_release_event(self, a0: QtGui.QKeyEvent) -> None:
         """Triggers actions when the user releases a key."""

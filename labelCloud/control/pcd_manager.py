@@ -135,14 +135,19 @@ class PointCloudManger(object):
         logging.info(green("Loaded %s bboxes!" % len(bboxes)))
         return bboxes
 
+    def get_rels_from_file(self) -> List:
+        rels = self.label_manager.import_rels(self.pcd_path)
+        logging.info(green("Loaded %s rels!" % len(rels)))
+        return rels
+
     # SETTER
     def set_view(self, view: "GUI") -> None:
         self.view = view
         self.view.glWidget.set_pointcloud_controller(self)
 
-    def save_labels_into_file(self, bboxes: List[BBox]) -> None:
+    def save_labels_into_file(self, bboxes: List[BBox], rels: List) -> None:
         if self.pcds:
-            self.label_manager.export_labels(self.pcd_path, bboxes)
+            self.label_manager.export_labels(self.pcd_path, bboxes, rels)
             self.collected_object_classes.update(
                 {bbox.get_classname() for bbox in bboxes}
             )

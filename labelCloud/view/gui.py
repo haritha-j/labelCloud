@@ -304,7 +304,7 @@ class GUI(QtWidgets.QMainWindow):
             self.controller.bbox_controller.deselect_bbox
         )
         self.button_rel_label.clicked.connect(
-            self.controller.bbox_controller.add_rel
+            lambda: self.controller.bbox_controller.add_rel('connection')
         )
         self.button_delete_label.clicked.connect(
             self.controller.bbox_controller.delete_current_bbox

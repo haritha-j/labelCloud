@@ -34,7 +34,7 @@ def has_active_bbox_decorator(func):
 
 def has_secondary_bbox_decorator(func):
     """
-    Only execute bounding box manipulation if there is an active bounding box.
+    Only add relationship if there is an active bounding box.
     """
 
     def wrapper(*args, **kwargs):
@@ -68,6 +68,7 @@ class BoundingBoxController(object):
     def __init__(self) -> None:
         self.view: Optional[GUI] = None
         self.bboxes: List[BBox] = []
+        self.rels: List = []
         self.active_bbox_id = -1  # -1 means zero bboxes
         self.secondary_bbox_id = -1 # second bbox for defining relationships
         self.pcd_manager: Optional[PointCloudManger] = None
@@ -160,6 +161,9 @@ class BoundingBoxController(object):
         self.deselect_bbox()
         self.update_label_list()
 
+    def set_rels(self, rels: List) -> None:
+        self.rels = rels
+
     def reset(self) -> None:
         self.deselect_bbox()
         self.set_bboxes([])
@@ -174,11 +178,14 @@ class BoundingBoxController(object):
         self.update_all()
         self.view.update_status("", mode="navigation")
 
-    def add_rel(self) -> None:
-        self.active_bbox_id = -1
-        self.update_all()
-        self.view.update_status("", mode="navigation")
 
+    def add_rel(self, rel_type='connection') -> None:
+        if self.has_active_bbox() and self.has_secondary_bbox():
+            self.rels.append([self.active_bbox_id, self.secondary_bbox_id, rel_type])
+            print(self.rels)
+            self.view.update_status(
+                "Relationship added.", mode="correction"
+            )
 
 
     # MANIPULATORS

@@ -73,5 +73,25 @@ class LabelManager(object):
             )
             return []
 
-    def export_labels(self, pcd_path: Path, bboxes: List[BBox]) -> None:
+    def import_rels(self, pcd_path: Path) -> List:
+        try:
+            return self.label_strategy.import_rels(pcd_path)
+        except KeyError as key_error:
+            logging.warning("Found a key error with %s in the dictionary." % key_error)
+            logging.warning(
+                "Could not import labels, please check the consistency of the label format."
+            )
+            return []
+        except AttributeError as attribute_error:
+            logging.warning(
+                "Attribute Error: %s. Expected a dictionary." % attribute_error
+            )
+            logging.warning(
+                "Could not import labels, please check the consistency of the label format."
+            )
+            return []
+
+    def export_labels(self, pcd_path: Path, bboxes: List[BBox], rels: List) -> None:
+        self.label_strategy.export_rels(rels, pcd_path)
         self.label_strategy.export_labels(bboxes, pcd_path)
+        
