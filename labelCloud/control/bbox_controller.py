@@ -32,6 +32,19 @@ def has_active_bbox_decorator(func):
 
     return wrapper
 
+def has_secondary_bbox_decorator(func):
+    """
+    Only execute bounding box manipulation if there is an active bounding box.
+    """
+
+    def wrapper(*args, **kwargs):
+        if args[0].has_secondary_bbox():
+            return func(*args, **kwargs)
+        else:
+            logging.warning("There is currently no active bounding box to manipulate.")
+
+    return wrapper
+
 
 def only_zrotation_decorator(func):
     """
@@ -56,6 +69,7 @@ class BoundingBoxController(object):
         self.view: Optional[GUI] = None
         self.bboxes: List[BBox] = []
         self.active_bbox_id = -1  # -1 means zero bboxes
+        self.secondary_bbox_id = -1 # second bbox for defining relationships
         self.pcd_manager: Optional[PointCloudManger] = None
 
     # GETTERS
@@ -67,10 +81,20 @@ class BoundingBoxController(object):
             return self.bboxes[self.active_bbox_id]
         else:
             return None
+    
+    def has_secondary_bbox(self) -> bool:
+        return 0 <= self.secondary_bbox_id < len(self.bboxes)
+
+    def get_secondary_bbox(self) -> Optional[BBox]:
+        if self.has_active_bbox():
+            return self.bboxes[self.secondary_bbox_id]
+        else:
+            return None
 
     @has_active_bbox_decorator
     def get_classname(self) -> str:
         return self.get_active_bbox().get_classname()
+
 
     # SETTERS
 
@@ -112,6 +136,16 @@ class BoundingBoxController(object):
         else:
             self.deselect_bbox()
 
+    def set_secondary_bbox(self, bbox_id: int) -> None:
+        if 0 <= bbox_id < len(self.bboxes):
+            self.secondary_bbox_id = bbox_id
+            self.update_all()
+            self.view.update_status(
+                "Secondary bounding Box selected, a relationship can now be added.", mode="correction"
+            )
+        else:
+            self.deselect_secondary_bbox()
+
     @has_active_bbox_decorator
     def set_classname(self, new_class: str) -> None:
         self.get_active_bbox().set_classname(new_class)
@@ -134,6 +168,12 @@ class BoundingBoxController(object):
         self.active_bbox_id = -1
         self.update_all()
         self.view.update_status("", mode="navigation")
+
+    def deselect_secondary_bbox(self) -> None:
+        self.secondary_bbox_id = -1
+        self.update_all()
+        self.view.update_status("", mode="navigation")
+
 
     # MANIPULATORS
     @has_active_bbox_decorator
@@ -287,6 +327,18 @@ class BoundingBoxController(object):
         if intersected_bbox_id is not None:
             self.set_active_bbox(intersected_bbox_id)
             logging.info("Selected bounding box %s." % intersected_bbox_id)
+
+    def select_secondary_bbox_by_ray(self, x: int, y: int) -> None:
+        intersected_bbox_id = oglhelper.get_intersected_bboxes(
+            x,
+            y,
+            self.bboxes,
+            self.view.glWidget.modelview,
+            self.view.glWidget.projection,
+        )
+        if intersected_bbox_id is not None:
+            self.set_secondary_bbox(intersected_bbox_id)
+            logging.info("Selected secondary bounding box %s." % intersected_bbox_id)
 
     # HELPER
 
