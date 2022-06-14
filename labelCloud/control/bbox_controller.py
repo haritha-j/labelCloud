@@ -174,6 +174,12 @@ class BoundingBoxController(object):
         self.update_all()
         self.view.update_status("", mode="navigation")
 
+    def add_rel(self) -> None:
+        self.active_bbox_id = -1
+        self.update_all()
+        self.view.update_status("", mode="navigation")
+
+
 
     # MANIPULATORS
     @has_active_bbox_decorator

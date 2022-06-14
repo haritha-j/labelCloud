@@ -144,13 +144,15 @@ class BBox(object):
         )
 
     # Draw the BBox using verticies
-    def draw_bbox(self, highlighted=False) -> None:
+    def draw_bbox(self, highlighted=0) -> None:
         self.set_axis_aligned_verticies()
 
         GL.glPushMatrix()
         bbox_color = (0, 0, 1, 1)
-        if highlighted:
+        if highlighted == 1:
             bbox_color = (0, 1, 0, 1)
+        if highlighted == 2:
+            bbox_color = (1, 0, 0, 1)
 
         vertices = self.get_vertices()
         drawing_sequence = []

@@ -152,7 +152,6 @@ class Controller:
     def mouse_double_clicked(self, a0: QtGui.QMouseEvent) -> None:
         """Triggers actions when the user double clicks the mouse."""
         if self.ctrl_pressed:
-            logging.info('control pressed')
             self.bbox_controller.select_secondary_bbox_by_ray(a0.x(), a0.y())
         else:
             self.bbox_controller.select_bbox_by_ray(a0.x(), a0.y())

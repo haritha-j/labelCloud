@@ -206,6 +206,9 @@ class GUI(QtWidgets.QMainWindow):
         self.button_deselect_label = self.findChild(
             QtWidgets.QPushButton, "button_label_deselect"
         )
+        self.button_rel_label = self.findChild(
+            QtWidgets.QPushButton, "button_label_rel"
+        )
         self.button_delete_label = self.findChild(
             QtWidgets.QPushButton, "button_label_delete"
         )
@@ -299,6 +302,9 @@ class GUI(QtWidgets.QMainWindow):
         )
         self.button_deselect_label.clicked.connect(
             self.controller.bbox_controller.deselect_bbox
+        )
+        self.button_rel_label.clicked.connect(
+            self.controller.bbox_controller.add_rel
         )
         self.button_delete_label.clicked.connect(
             self.controller.bbox_controller.delete_current_bbox

@@ -1,24 +1,60 @@
 {
 	"folder": "pointclouds",
 	"filename": "exemplary.ply",
-	"path": "pointclouds/exemplary.ply",
+	"path": "pointclouds\\exemplary.ply",
 	"objects": [
 		{
 			"name": "cart",
 			"centroid": {
-				"x": -0.1908196,
-				"y": -0.23602801,
+				"x": -0.26125167,
+				"y": -0.31711018,
 				"z": 0.08046184
 			},
 			"dimensions": {
-				"length": 0.75,
+				"length": 0.72,
 				"width": 0.55,
 				"height": 0.15
 			},
 			"rotations": {
+				"x": 0.9,
+				"y": 0,
+				"z": 265.3
+			}
+		},
+		{
+			"name": "cart",
+			"centroid": {
+				"x": -0.94816237,
+				"y": -0.27550656,
+				"z": 0.07655712
+			},
+			"dimensions": {
+				"length": 0.63,
+				"width": 0.462,
+				"height": 0.126
+			},
+			"rotations": {
 				"x": 0,
 				"y": 0,
-				"z": 235
+				"z": 354.1
+			}
+		},
+		{
+			"name": "cart",
+			"centroid": {
+				"x": 0.73315556,
+				"y": -0.37111,
+				"z": 0.1234277
+			},
+			"dimensions": {
+				"length": 0.66,
+				"width": 0.97,
+				"height": 0.48
+			},
+			"rotations": {
+				"x": 0,
+				"y": 0,
+				"z": 14.8
 			}
 		}
 	]
