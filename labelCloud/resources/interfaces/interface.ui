@@ -1489,6 +1489,59 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="button_rel_deselect">
+          <property name="toolTip">
+           <string>Deselect current relationship.</string>
+          </property>
+          <property name="text">
+           <string>Deselect</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../icons/select-off.svg</normaloff>../icons/select-off.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>15</width>
+            <height>15</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_rel_delete">
+          <property name="toolTip">
+           <string>Delete current relationship. [DEL]</string>
+          </property>
+          <property name="text">
+           <string>Delete</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../icons/delete-outline.svg</normaloff>../icons/delete-outline.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>17</width>
+            <height>17</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QListWidget" name="rel_list">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Maximum">
@@ -1775,6 +1828,9 @@
   <tabstop>button_label_deselect</tabstop>
   <tabstop>button_label_delete</tabstop>
   <tabstop>label_list</tabstop>
+  <tabstop>button_rel_deselect</tabstop>
+  <tabstop>button_rel_delete</tabstop>
+  <tabstop>rel_list</tabstop>
  </tabstops>
  <resources/>
  <connections/>

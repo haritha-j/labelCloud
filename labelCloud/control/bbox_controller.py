@@ -138,6 +138,18 @@ class BoundingBoxController(object):
         selected_item_id = self.view.label_list.currentRow()
         self.delete_bbox(selected_item_id)
 
+    def delete_rel(self, rel_id: int) -> None:
+        if 0 <= rel_id < len(self.rels):
+            del self.rels[rel_id]
+            if rel_id == self.active_rel_id:
+                self.set_active_rel(len(self.rels) - 1)
+            else:
+                self.update_rel_list()
+
+    def delete_current_rel(self) -> None:
+        selected_item_id = self.view.rel_list.currentRow()
+        self.delete_rel(selected_item_id)
+
     def set_active_bbox(self, bbox_id: int) -> None:
         if 0 <= bbox_id < len(self.bboxes):
             self.active_bbox_id = bbox_id
@@ -427,4 +439,7 @@ class BoundingBoxController(object):
         self.view.rel_list.clear()
         for rel in self.rels:
             self.view.rel_list.addItem(rel[2])
+        if self.has_active_rel():
+            self.view.rel_list.setCurrentRow(self.active_rel_id)
+            self.view.rel_list.currentItem().setSelected(True)
         self.view.rel_list.blockSignals(False)

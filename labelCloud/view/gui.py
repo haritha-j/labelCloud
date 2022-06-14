@@ -227,6 +227,12 @@ class GUI(QtWidgets.QMainWindow):
         self.button_delete_label = self.findChild(
             QtWidgets.QPushButton, "button_label_delete"
         )
+        self.button_deselect_rel = self.findChild(
+            QtWidgets.QPushButton, "button_rel_deselect"
+        )
+        self.button_delete_rel = self.findChild(
+            QtWidgets.QPushButton, "button_rel_delete"
+        )
 
         # BOUNDING BOX PARAMETER EDITS
         self.pos_x_edit = self.findChild(QtWidgets.QLineEdit, "pos_x_edit")
@@ -318,11 +324,17 @@ class GUI(QtWidgets.QMainWindow):
         self.button_deselect_label.clicked.connect(
             self.controller.bbox_controller.deselect_bbox
         )
+        self.button_deselect_rel.clicked.connect(
+            self.controller.bbox_controller.deselect_rel
+        )
         self.button_rel_label.clicked.connect(
             lambda: self.controller.bbox_controller.add_rel('connection')
         )
         self.button_delete_label.clicked.connect(
             self.controller.bbox_controller.delete_current_bbox
+        )
+        self.button_delete_rel.clicked.connect(
+            self.controller.bbox_controller.delete_current_rel
         )
         self.label_list.currentRowChanged.connect(
             self.controller.bbox_controller.set_active_bbox
