@@ -83,6 +83,20 @@ STYLESHEET = """
         background: rgb(0, 0, 255);
         background: url("{icons_dir}/cube-outline_white.svg") center left no-repeat, #0000ff;
     }}
+
+    QListWidget#rel_list::item {{
+        padding-left: 22px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        background: url("{icons_dir}/cube-outline.svg") center left no-repeat;
+    }}
+
+    QListWidget#rel_list::item:selected {{
+        color: #FFF;
+        border: none;
+        background: rgb(0, 0, 255);
+        background: url("{icons_dir}/cube-outline_white.svg") center left no-repeat, #0000ff;
+    }}
 """
 
 
@@ -199,6 +213,7 @@ class GUI(QtWidgets.QMainWindow):
 
         # RIGHT PANEL
         self.label_list = self.findChild(QtWidgets.QListWidget, "label_list")
+        self.rel_list = self.findChild(QtWidgets.QListWidget, "rel_list")
         self.curr_class_edit = self.findChild(
             QtWidgets.QLineEdit, "current_class_lineedit"
         )
@@ -311,6 +326,9 @@ class GUI(QtWidgets.QMainWindow):
         )
         self.label_list.currentRowChanged.connect(
             self.controller.bbox_controller.set_active_bbox
+        )
+        self.rel_list.currentRowChanged.connect(
+            self.controller.bbox_controller.set_active_rel
         )
 
         # open_2D_img

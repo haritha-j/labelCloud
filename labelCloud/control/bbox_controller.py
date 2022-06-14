@@ -71,6 +71,7 @@ class BoundingBoxController(object):
         self.rels: List = []
         self.active_bbox_id = -1  # -1 means zero bboxes
         self.secondary_bbox_id = -1 # second bbox for defining relationships
+        self.active_rel_id = -1
         self.pcd_manager: Optional[PointCloudManger] = None
 
     # GETTERS
@@ -82,7 +83,17 @@ class BoundingBoxController(object):
             return self.bboxes[self.active_bbox_id]
         else:
             return None
-    
+
+    def has_active_rel(self) -> bool:
+        return 0 <= self.active_rel_id < len(self.rels)
+  
+    def get_active_rel_bboxes(self) -> Optional[list]:
+        if self.has_active_rel():
+            rel = self.rels[self.active_rel_id]
+            return [self.bboxes[rel[0]], self.bboxes[rel[1]]]
+        else:
+            return None
+  
     def has_secondary_bbox(self) -> bool:
         return 0 <= self.secondary_bbox_id < len(self.bboxes)
 
@@ -137,6 +148,16 @@ class BoundingBoxController(object):
         else:
             self.deselect_bbox()
 
+    def set_active_rel(self, rel_id: int) -> None:
+        if 0 <= rel_id < len(self.rels):
+            self.active_rel_id = rel_id
+            self.update_all()
+            self.view.update_status(
+                "Relationship selected.", mode="correction"
+            )
+        else:
+            self.deselect_rel()
+
     def set_secondary_bbox(self, bbox_id: int) -> None:
         if 0 <= bbox_id < len(self.bboxes):
             self.secondary_bbox_id = bbox_id
@@ -163,6 +184,8 @@ class BoundingBoxController(object):
 
     def set_rels(self, rels: List) -> None:
         self.rels = rels
+        self.deselect_rel()
+        self.update_rel_list()
 
     def reset(self) -> None:
         self.deselect_bbox()
@@ -170,6 +193,11 @@ class BoundingBoxController(object):
 
     def deselect_bbox(self) -> None:
         self.active_bbox_id = -1
+        self.update_all()
+        self.view.update_status("", mode="navigation")
+
+    def deselect_rel(self) -> None:
+        self.active_rel_id = -1
         self.update_all()
         self.view.update_status("", mode="navigation")
 
@@ -359,6 +387,7 @@ class BoundingBoxController(object):
         self.update_z_dial()
         self.update_curr_class()
         self.update_label_list()
+        self.update_rel_list()
         self.view.update_bbox_stats(self.get_active_bbox())
 
     @has_active_bbox_decorator
@@ -387,3 +416,15 @@ class BoundingBoxController(object):
             self.view.label_list.setCurrentRow(self.active_bbox_id)
             self.view.label_list.currentItem().setSelected(True)
         self.view.label_list.blockSignals(False)
+
+    def update_rel_list(self) -> None:
+        """Updates the list of drawn relationships and highlights the active relationship.
+
+        Should be always called if the relationships changed.
+        :return: None
+        """
+        self.view.rel_list.blockSignals(True)  # To brake signal loop
+        self.view.rel_list.clear()
+        for rel in self.rels:
+            self.view.rel_list.addItem(rel[2])
+        self.view.rel_list.blockSignals(False)

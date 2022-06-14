@@ -153,6 +153,8 @@ class BBox(object):
             bbox_color = (0, 1, 0, 1)
         if highlighted == 2:
             bbox_color = (1, 0, 0, 1)
+        if highlighted == 3:
+            bbox_color = (0, 1, 1, 1)
 
         vertices = self.get_vertices()
         drawing_sequence = []

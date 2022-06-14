@@ -124,6 +124,15 @@ class GLWidget(QtOpenGL.QGLWidget):
             if config.getboolean("USER_INTERFACE", "show_orientation"):
                 self.bbox_controller.get_secondary_bbox().draw_orientation()
 
+        # Draw active relationship
+        if self.bbox_controller.has_active_rel():
+            bboxes = self.bbox_controller.get_active_rel_bboxes()
+            bboxes[0].draw_bbox(highlighted=3)
+            bboxes[1].draw_bbox(highlighted=3)
+            if config.getboolean("USER_INTERFACE", "show_orientation"):
+                bboxes[0].draw_orientation()
+                bboxes[1].draw_orientation()
+
         # Draw labeled bboxes
         for bbox in self.bbox_controller.bboxes:
             bbox.draw_bbox()
