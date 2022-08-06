@@ -137,6 +137,11 @@ class GLWidget(QtOpenGL.QGLWidget):
         for bbox in self.bbox_controller.bboxes:
             bbox.draw_bbox()
 
+        # draw relationships
+        for rel in self.bbox_controller.rels:
+            v1 = self.bbox_controller.bboxes[rel[1]].get_vertices()
+            self.bbox_controller.bboxes[rel[0]].draw_relationship(v1)
+
         GL.glPopMatrix()  # restore the previous modelview matrix
 
     # Translates the 2D cursor position from screen plane into 3D world space coordinates

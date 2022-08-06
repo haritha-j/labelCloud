@@ -33,6 +33,10 @@ class BBox(object):
         self.verticies = None
         self.set_axis_aligned_verticies()
 
+
+    def sq_distance(self, x1, y1, z1, x2, y2, z2):
+        return ((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
+
     # GETTERS
 
     def get_center(self) -> Tuple[float, float, float]:
@@ -164,6 +168,65 @@ class BBox(object):
 
         oglhelper.draw_lines(drawing_sequence, color=bbox_color)
         GL.glPopMatrix()
+
+
+    # Draw a relationship using verticies
+    def draw_relationship(self, vertices1, highlighted=0) -> None:
+        self.set_axis_aligned_verticies()
+
+        GL.glPushMatrix()
+        bbox_color = (1, 0, 0, 1)
+        vertices2 = self.get_vertices()
+
+        # get centre points of all faces
+        faces1, faces2 = {}, {}
+        for side in BBOX_SIDES:
+            x = sum(vertices1[i][0] for i in BBOX_SIDES[side])/4
+            y = sum(vertices1[i][1] for i in BBOX_SIDES[side])/4
+            z = sum(vertices1[i][2] for i in BBOX_SIDES[side])/4
+            faces1[side] = [x,y,z]
+        
+            x = sum(vertices2[i][0] for i in BBOX_SIDES[side])/4
+            y = sum(vertices2[i][1] for i in BBOX_SIDES[side])/4
+            z = sum(vertices2[i][2] for i in BBOX_SIDES[side])/4
+            faces2[side] = [x,y,z]
+
+        # find the two closest faces
+        min_dist = np.Inf
+        key1, key2 = "", ""
+        for i in faces1:
+            for j in faces2:
+                dist = self.sq_distance(faces1[i][0], faces1[i][1], 
+                faces1[i][2], faces2[j][0], faces2[j][1], faces2[j][2])
+                print(dist)
+                if dist < min_dist:
+                    min_dist = dist
+                    key1, key2 = i, j
+                
+        # get vertices from faces
+        chosen_vertices1 = [vertices1[i] for i in BBOX_SIDES[key1]]
+        chosen_vertices2 = [vertices2[i] for i in BBOX_SIDES[key2]]
+
+        # connect all vertices
+        permutations = [[chosen_vertices2[1], chosen_vertices2[2], chosen_vertices2[3], chosen_vertices2[0]],
+        [chosen_vertices2[2], chosen_vertices2[3], chosen_vertices2[0], chosen_vertices2[1]],
+        [chosen_vertices2[3], chosen_vertices2[0], chosen_vertices2[1], chosen_vertices2[2]]]
+
+        vertice_pairs = [np.concatenate((chosen_vertices1, chosen_vertices2)),
+        np.concatenate((chosen_vertices1, permutations[0])),
+        np.concatenate((chosen_vertices1, permutations[1])),
+        np.concatenate((chosen_vertices1, permutations[2]))]
+        
+        # draw
+        drawing_sequence = []
+        for edge in BBOX_EDGES:
+            for i  in range(4):
+                for vertex_id in edge:
+                    drawing_sequence.append(vertice_pairs[i][vertex_id])
+
+        oglhelper.draw_lines(drawing_sequence, color=bbox_color, line_width=4)
+        GL.glPopMatrix()
+
 
     def draw_orientation(self, crossed_side: bool = True) -> None:
         # Get object coordinates for arrow
