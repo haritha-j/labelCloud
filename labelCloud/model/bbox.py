@@ -150,8 +150,9 @@ class BBox(object):
     # Draw the BBox using verticies
     def draw_bbox(self, highlighted=0) -> None:
         self.set_axis_aligned_verticies()
-
         GL.glPushMatrix()
+
+        # set colour
         bbox_color = (0, 0, 1, 1)
         if highlighted == 1:
             bbox_color = (0, 1, 0, 1)
@@ -173,10 +174,16 @@ class BBox(object):
     # Draw a relationship using verticies
     def draw_relationship(self, vertices1, highlighted=0) -> None:
         self.set_axis_aligned_verticies()
-
         GL.glPushMatrix()
-        bbox_color = (1, 0, 0, 1)
         vertices2 = self.get_vertices()
+
+        # set colour
+        if highlighted == 1:
+            bbox_color = (1, 1, 0, 1)
+        if highlighted == 2:
+            bbox_color = (0, 1, 0, 1)
+        if highlighted == 3:
+            bbox_color = (1, 0, 0, 1)
 
         # get centre points of all faces
         faces1, faces2 = {}, {}
@@ -198,7 +205,6 @@ class BBox(object):
             for j in faces2:
                 dist = self.sq_distance(faces1[i][0], faces1[i][1], 
                 faces1[i][2], faces2[j][0], faces2[j][1], faces2[j][2])
-                print(dist)
                 if dist < min_dist:
                     min_dist = dist
                     key1, key2 = i, j
@@ -220,7 +226,7 @@ class BBox(object):
         # draw
         drawing_sequence = []
         for edge in BBOX_EDGES:
-            for i  in range(4):
+            for i  in range(1):
                 for vertex_id in edge:
                     drawing_sequence.append(vertice_pairs[i][vertex_id])
 

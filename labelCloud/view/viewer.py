@@ -119,10 +119,11 @@ class GLWidget(QtOpenGL.QGLWidget):
                 self.bbox_controller.get_active_bbox().draw_orientation()
 
         # Draw secondary bbox
-        if self.bbox_controller.has_secondary_bbox():
-            self.bbox_controller.get_secondary_bbox().draw_bbox(highlighted=2)
-            if config.getboolean("USER_INTERFACE", "show_orientation"):
-                self.bbox_controller.get_secondary_bbox().draw_orientation()
+        if self.bbox_controller is not None:
+            if self.bbox_controller.has_secondary_bbox():
+                self.bbox_controller.get_secondary_bbox().draw_bbox(highlighted=2)
+                if config.getboolean("USER_INTERFACE", "show_orientation"):
+                    self.bbox_controller.get_secondary_bbox().draw_orientation()
 
         # Draw active relationship
         if self.bbox_controller.has_active_rel():
@@ -139,8 +140,14 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         # draw relationships
         for rel in self.bbox_controller.rels:
+            if rel[2] == 'FP':
+                highlight = 1
+            elif rel[2] == 'TP':
+                highlight = 2
+            else:
+                highlight = 3
             v1 = self.bbox_controller.bboxes[rel[1]].get_vertices()
-            self.bbox_controller.bboxes[rel[0]].draw_relationship(v1)
+            self.bbox_controller.bboxes[rel[0]].draw_relationship(v1, highlight)
 
         GL.glPopMatrix()  # restore the previous modelview matrix
 
