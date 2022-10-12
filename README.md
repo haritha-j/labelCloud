@@ -16,6 +16,23 @@ A lightweight tool for labeling 3D bounding boxes in point clouds.
 
 :new: *We are currently evaluating labelCloud and invite you to fill this questionaire https://forms.gle/moEyjGSa1Eiiq7VT8 (~5 min)!*
 
+## Modifications for relationships
+
+### visualization of outputs
+
+Green : True positives
+
+Red : False negatives
+
+Yellow : False positives
+
+
+### relationship annotation steps
+
+1. double-click : Select first element (green highlight)
+2. ctrl+double-click : Select second element (red highlight)
+3. press relationship button
+
 ## Setup
 :information_source: *Currently labelCloud supports Python 3.6 to 3.9.*
 
